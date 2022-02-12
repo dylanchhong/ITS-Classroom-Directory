@@ -1,0 +1,537 @@
+<div class="sidenav" style="width: 320px;">
+    <h1 style="font-size: 150%;">Buildings</h1>
+    <select name="buildings" id="buildings" onchange="Filter()">
+        <option value='building'>All Buildings</option>
+        <option value='Art North (ARTN)'>Art North (ARTN)</option>
+        <option value='Adams Humanities (AH)'>Adams Humanities (AH)</option>
+        <option value='Arts and Letters (AL)'>Arts and Letters (AL)</option>
+        <option value='Communications (COM)'>Communications (COM)</option>
+        <option value='Engineering (E)'>Engineering (E)</option>
+        <option value='Exercise and Nutritional Sciences (ENS)'>Exercise and Nutritional Sciences (ENS)</option>
+        <option value='Fowler Athletic Center (FAC)'>Fowler Athletic Center (FAC)</option>
+        <option value='Geology, Math, and Computer Science (GMCS)'>Geology, Math, and Computer Science (GMCS)</option>
+        <option value='Hepner Hall (HH)'>Hepner Hall (HH)</option>
+        <option value='Hardy Tower (HT)'>Hardy Tower (HT)</option>
+        <option value='Lamden Hall (LH)'>Lamden Hall (LH)</option>
+        <option value='Love Library (LL)'>Love Library (LL)</option>
+        <option value='Life Sciences North (LSN)'>Life Sciences North (LSN)</option>
+        <option value='Life Sciences South (LSS)'>Life Sciences South (LSS)</option>
+        <option value='Little Theatre (LT)'>Little Theatre (LT)</option>
+        <option value='Music (M)'>Music (M)</option>
+        <option value='North Education (NE)'>North Education (NE)</option>
+        <option value='Physics (P)'>Physics (P)</option>
+        <option value='Peterson Gym (PG)'>Peterson Gym (PG)</option>
+        <option value='Physical Sciences (PS)'>Physical Sciences (PS)</option>
+        <option value='Professional Studies and Fine Arts (PSFA)'>Professional Studies and Fine Arts (PSFA)</option>
+        <option value='Storm Hall (SH)'>Storm Hall (SH)</option>
+        <option value='Storm Hall West (SHW)'>Storm Hall West (SHW)</option>
+        <option value='Speech, Language, and Hearing Sciences (SLHS)'>Speech, Language, and Hearing Sciences (SLHS)
+        </option>
+        <option value='Student Services East (SSE)'>Student Services East (SSE)</option>
+        <option value='Student Services West (SSW)'>Student Services West (SSW)</option>
+        <option value='West Commons (WC)'>West Commons (WC)</option>
+    </select>
+
+    <div><input type="text" id="search" placeholder="Search for classroom... " style="float:left;"></div>
+    <div><button onclick="Filter()">Submit</button></div>
+
+    <!--Checkboxes to filter through different classrooms features-->
+    <h1 style="font-size: 150%;">Classroom Features</h1>
+    <div><input type="checkbox" class="features" name="ctrlPanel" value="ctrlPanel" onclick="Filter()"> ControlPanel
+    </div>
+    <div><input type="checkbox" class="features" name="touchlink" value="touchlink" onclick="Filter()"> Touchlink</div>
+    <div><input type="checkbox" class="features" name="laptop" value="laptop" onclick="Filter()"> Laptop Ready (No
+        installed computers)
+    </div>
+    <div><input type="checkbox" class="features" name="hdmi" value="hdmi" onclick="Filter()"> HDMI</div>
+    <div><input type="checkbox" class="features" name="key" value="key" onclick="Filter()"> Podium Requires Key</div>
+    <div><input type="checkbox" class="features" name="mic" value="mic" onclick="Filter()"> Microphone System</div>
+    <h1 style="font-size: 150%;">Connected Classrooms (All Automated Capture rooms are Zoom Ready)</h1>
+    <div><input type="checkbox" class="features" name="zoom" value="zoom" onclick="Filter()"> Zoom Ready</div>
+    <div><input type="checkbox" class="features" name="mediasite" value="mediasite" onclick="Filter()"> Automated
+        Capture</div>
+    <h1 style="font-size: 150%;">Capacity</h1>
+    <div><input type="number" id="minNum" min="0" placeholder="Min" onclick="Filter()" style="float: left; width: 65px">
+    </div>
+    <div><input type="number" id="maxNum" min="0" placeholder="Max" onclick="Filter()" style="float: left; width: 65px">
+    </div>
+    <div><button onclick="Filter()">Submit</button></div>
+</div>
+
+
+<script>
+    /*variables checkboxes and validRooms collects data that has tag "input" and class "room"*/
+    var checkboxes = document.getElementsByClassName("features");
+    var validRooms = document.getElementsByClassName("room");
+    var buildings = document.getElementsByClassName("building");
+    var buildingDropDown = document.getElementById("buildings");
+    var min = document.getElementById("minNum");
+    var max = document.getElementById("maxNum");
+    var input = document.getElementById("search");
+    function Filter() {
+        /*displays every classroom*/
+        for (let i = 0; i < validRooms.length; i++) {
+            validRooms[i].style.display = "block";
+            var txt = validRooms[i].textContent || validRooms[i].innerText;
+            var str = input.value.toUpperCase().replace(/\s/g, '').replace(/-/g, '');
+            /*goes through every checked checkbox. if the room doesn't 
+            contain the class of the checkbox name, it is hidden*/
+            for (let j = 0; j < checkboxes.length; j++) {
+                if (checkboxes[j].type == "checkbox") {
+                    if (checkboxes[j].checked) {
+                        if (!(validRooms[i].classList.contains(checkboxes[j].value))) {
+                            validRooms[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+
+            /*checks if classroom capacity is within range of given min and max*/
+            if (validRooms[i].value < parseInt(min.value) || validRooms[i].value > parseInt(max.value)) {
+                validRooms[i].style.display = "none";
+            }
+
+            if (txt.toUpperCase().indexOf(str) <= -1) {
+                validRooms[i].style.display = "none";
+            }
+        }
+        for (let i = 0; i < buildings.length; i++) {
+            var roomsInBuilding = buildings[i].getElementsByClassName("room");
+            if (buildingDropDown.options[buildingDropDown.selectedIndex].text != "All Buildings") {
+                if (buildings[i].getElementsByTagName("h3")[0].innerHTML != buildingDropDown.options[buildingDropDown.selectedIndex].text) {
+                    for (let j = 0; j < roomsInBuilding.length; j++) {
+                        roomsInBuilding[j].style.display = "none";
+
+                    }
+                }
+
+            }
+            /*hides headers if none of the classrooms in a building are showing*/
+            for (let i = 0; i < buildings.length; i++) {
+                buildings[i].getElementsByTagName("h3")[0].style.display = "none";
+                var roomsInBuilding = buildings[i].getElementsByClassName("room");
+                for (let j = 0; j < roomsInBuilding.length; j++) {
+                    if ((roomsInBuilding[j].style.display == "block")) {
+                        buildings[i].getElementsByTagName("h3")[0].style.display = "block";
+                    }
+                }
+            }
+
+        }
+    }
+</script>
+
+<div class="main" style="margin-left: 350px;">
+    <div class="flex" style="display: flex; flex-wrap: wrap; flex-direction: row;">
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Art North (ARTN)</h3>
+            <ul>
+                <li class="room touchlink hdmi zoom artn" value="30" style="list-style-type: none;"><a
+                        href="/room-directory/artn300b">ARTN300B</a>
+                </li>
+                <li class="room touchlink hdmi key mic zoom mediasite artn" value="70" style="list-style-type: none;"><a
+                        href="/room-directory/artn412">ARTN412</a></li>
+                <li class="room ctrlPanel hdmi zoom artn" value="40" style="list-style-type: none;"><a
+                        href="/room-directory/artn512b">ARTN512B</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Adams Humanities (AH)</h3>
+            <ul>
+                <li class="room touchlink hdmi zoom ah" value="42" style="list-style-type: none;"><a
+                        href="/room-directory/ah2103">AH2103</a></li>
+                <li class="room touchlink hdmi zoom ah" value="32" style="list-style-type: none;"><a
+                        href="/room-directory/ah2107">AH2107</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite ah" value="150" style="list-style-type: none;"><a
+                        href="/room-directory/ah2108">AH2108</a>
+                </li>
+                <li class="room ctrlPanel key ah" value="32" style="list-style-type: none;"><a
+                        href="/room-directory/ah2111">AH2111</a></li>
+                <li class="room ctrlPanel ah" value="40" style="list-style-type: none;"><a
+                        href="/room-directory/ah2112">AH2112</a></li>
+                <li class="room ctrlPanel zoom ah" value="41" style="list-style-type: none;"><a
+                        href="/room-directory/ah2113">AH2113</a></li>
+                <li class="room ctrlPanel ah" value="30" style="list-style-type: none;"><a
+                        href="/room-directory/ah2116">AH2116</a></li>
+                <li class="room ctrlPanel key ah" value="30" style="list-style-type: none;"><a
+                        href="/room-directory/ah2134">AH2134</a></li>
+                <li class="room ctrlPanel key ah" value="60" style="list-style-type: none;"><a
+                        href="/room-directory/ah3110">AH3110</a></li>
+                <li class="room ctrlPanel key ah" value="50" style="list-style-type: none;"><a
+                        href="/room-directory/ah3113">AH3113</a></li>
+                <li class="room ctrlPanel key ah" value="30" style="list-style-type: none;"><a
+                        href="/room-directory/ah3127">AH3127</a></li>
+                <li class="room ctrlPanel key ah" value="30" style="list-style-type: none;"><a
+                        href="/room-directory/ah3130">AH3130</a></li>
+                <li class="room ctrlPanel key ah" value="30" style="list-style-type: none;"><a
+                        href="/room-directory/ah3150">AH3150</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite ah" value="60" style="list-style-type: none;"><a
+                        href="/room-directory/ah3177">AH3177</a>
+                </li>
+                <li class="room ctrlPanel hdmi zoom ah" value="54" style="list-style-type: none;"><a
+                        href="/room-directory/ah4176">AH4176</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Arts and Letters (AL)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom" value="108" style="list-style-type: none;"><a
+                        href="/room-directory/al101">AL101</a></li>
+                <li class="room ctrlPanel key zoom" value="60" style="list-style-type: none;"><a
+                        href="/room-directory/al102">AL102</a></li>
+                <li class="room touchlink hdmi zoom" value="41" style="list-style-type: none;"><a
+                        href="/room-directory/al104">AL104</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="80" style="list-style-type: none;"><a
+                        href="/room-directory/al105">AL105</a>
+                </li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="500" style="list-style-type: none;"><a
+                        href="/room-directory/al201">AL201</a>
+                </li>
+                <li class="room touchlink hdmi mic zoom" value="60" style="list-style-type: none;"><a
+                        href="/room-directory/al204">AL204</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Communications (COM)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="70" style="list-style-type: none;"><a
+                        href="/room-directory/com105">COM105</a>
+                </li>
+                <li class="room ctrlPanel key" value="30" style="list-style-type: none;"><a
+                        href="/room-directory/com205">COM205</a></li>
+                <li class="room ctrlPanel key" value="45" style="list-style-type: none;"><a
+                        href="/room-directory/com206">COM206</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="123" style="list-style-type: none;"><a
+                        href="/room-directory/com207">COM207</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Engineering (E)</h3>
+            <ul>
+                <li class="room touchlink hdmi mic zoom mediasite" value="50" style="list-style-type: none;"><a
+                        href="/room-directory/e201">E201</a>
+                </li>
+                <li class="room ctrlPanel hdmi key mic zoom" value="49" style="list-style-type: none;"><a
+                        href="/room-directory/e300">E300</a></li>
+                <li class="room touchlink hdmi zoom mediasite" value="49" style="list-style-type: none;"><a
+                        href="/room-directory/e328">E328</a></li>
+                <li class="room touchlink hdmi mic zoom" value="52" style="list-style-type: none;"><a
+                        href="/room-directory/e423b">E423B</a></li>
+                <li class="room touchlink hdmi zoom" value="40" style="list-style-type: none;"><a
+                        href="/room-directory/e427">E427</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Exercise and Nutritional Sciences (ENS)</h3>
+            <ul>
+                <li class="room ctrlPanel key" value="40" style="list-style-type: none;"><a
+                        href="/room-directory/ens106">ENS106</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="512" style="list-style-type: none;"><a
+                        href="/room-directory/ens280">ENS280</a>
+                </li>
+                <li class="room ctrlPanel key mic" value="75" style="list-style-type: none;"><a
+                        href="/room-directory/ens291">ENS291</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Fowler Athletic Center (FAC)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="200" style="list-style-type: none;"><a
+                        href="/room-directory/fac1014">FAC1014</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Geology, Math, and Computer Science (GMCS)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="111" style="list-style-type: none;"><a
+                        href="/room-directory/gmcs301">GMCS301</a>
+                </li>
+                <li class="room ctrlPanel key" value="40" style="list-style-type: none;"><a href="/room-directory/gmcs305">GMCS305</a></li>
+                <li class="room ctrlPanel key" value="40" style="list-style-type: none;"><a href="/room-directory/gmcs306">GMCS306</a></li>
+                <li class="room ctrlPanel key" value="40" style="list-style-type: none;"><a href="/room-directory/gmcs307">GMCS307</a></li>
+                <li class="room ctrlPanel key" value="40" style="list-style-type: none;"><a href="/room-directory/gmcs308">GMCS308</a></li>
+                <li class="room touchlink hdmi mic zoom" value="60" style="list-style-type: none;"><a href="/room-directory/gmcs309">GMCS309</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="60" style="list-style-type: none;"><a
+                        href="/room-directory/gmcs310">GMCS310</a>
+                </li>
+                <li class="room touchlink hdmi mic zoom" value="60" style="list-style-type: none;"><a href="/room-directory/gmcs313">GMCS313</a></li>
+                <li class="room touchlink hdmi mic zoom" value="60" style="list-style-type: none;"><a href="/room-directory/gmcs314">GMCS314</a></li>
+                <li class="room ctrlPanel key" value="65" style="list-style-type: none;"><a href="/room-directory/gmcs324">GMCS324</a></li>
+                <li class="room ctrlPanel key" value="42" style="list-style-type: none;"><a href="/room-directory/gmcs325">GMCS325</a></li>
+                <li class="room ctrlPanel key" value="42" style="list-style-type: none;"><a href="/room-directory/gmcs327">GMCS327</a></li>
+                <li class="room touchlink hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/gmcs328">GMCS328</a></li>
+                <li class="room ctrlPanel key" value="42" style="list-style-type: none;"><a href="/room-directory/gmcs329">GMCS329</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="300" style="list-style-type: none;"><a
+                        href="/room-directory/gmcs333">GMCS333</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Hepner Hall (HH)</h3>
+            <ul>
+                <li class="room ctrlPanel hdmi zoom" value="30" style="list-style-type: none;"><a href="/room-directory/hh122">HH122</a></li>
+                <li class="room ctrlPanel key" value="26" style="list-style-type: none;"><a href="/room-directory/hh128">HH128</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="170" style="list-style-type: none;"><a
+                        href="/room-directory/hh130">HH130</a>
+                </li>
+                <li class="room ctrlPanel key zoom" value="40" style="list-style-type: none;"><a href="/room-directory/hh134">HH134</a></li>
+                <li class="room ctrlPanel key" value="32" style="list-style-type: none;"><a href="/room-directory/hh146">HH146</a></li>
+                <li class="room ctrlPanel key" value="40" style="list-style-type: none;"><a href="/room-directory/hh150">HH150</a></li>
+                <li class="room ctrlPanel key" value="42" style="list-style-type: none;"><a href="/room-directory/hh206">HH206</a></li>
+                <li class="room ctrlPanel key" value="42" style="list-style-type: none;"><a href="/room-directory/hh210">HH210</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="100" style="list-style-type: none;"><a
+                        href="/room-directory/hh214">HH214</a>
+                </li>
+                <li class="room touchlink hdmi zoom" value="32" style="list-style-type: none;"><a href="/room-directory/hh216">HH216</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="32" style="list-style-type: none;"><a href="/room-directory/hh218">HH218</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="108" style="list-style-type: none;"><a
+                        href="/room-directory/hh221">HH221</a>
+                </li>
+                <li class="room ctrlPanel key" value="48" style="list-style-type: none;"><a href="/room-directory/hh222">HH222</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Hardy Tower (HT)</h3>
+            <ul>
+                <li class="room ctrlPanel hdmi zoom" value="52" style="list-style-type: none;"><a href="/room-directory/ht22">HT22</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="228" style="list-style-type: none;"><a
+                        href="/room-directory/ht140">HT140</a>
+                </li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="98" style="list-style-type: none;"><a
+                        href="/room-directory/ht183">HT183</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Lamden Hall (LH)</h3>
+            <ul>
+                <li class="room ctrlPanel hdmi zoom" value="20" style="list-style-type: none;"><a href="/room-directory/LH245">LH245</a></li>
+                <li class="room touchlink hdmi zoom" value="42" style="list-style-type: none;"><a href="/room-directory/LH247">LH247</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="26" style="list-style-type: none;"><a href="/room-directory/LH249">LH249</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="26" style="list-style-type: none;"><a href="/room-directory/LH251">LH251</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="38" style="list-style-type: none;"><a href="/room-directory/LH254">LH254</a></li>
+                <li class="room ctrlPanel key zoom" value="35" style="list-style-type: none;"><a href="/room-directory/LH256">LH256</a></li>
+                <li class="room ctrlPanel key zoom" value="35" style="list-style-type: none;"><a href="/room-directory/LH258">LH258</a></li>
+                <li class="room ctrlPanel key zoom" value="40" style="list-style-type: none;"><a href="/room-directory/LH260">LH260</a></li>
+                <li class="room touchlink hdmi mic zoom" value="68" style="list-style-type: none;"><a href="/room-directory/LH339">LH339</a></li>
+                <li class="room touchlink hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/LH340">LH340</a></li>
+                <li class="room touchlink hdmi mic zoom" value="50" style="list-style-type: none;"><a href="/room-directory/LH341">LH341</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="90" style="list-style-type: none;"><a
+                        href="/room-directory/LH343">LH343</a>
+                </li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="80" style="list-style-type: none;"><a
+                        href="/room-directory/LH345">LH345</a>
+                </li>
+                <li class="room touchlink hdmi mic zoom" value="80" style="list-style-type: none;"><a href="/room-directory/LH347">LH347</a></li>
+                <li class="room ctrlPanel" value="49" style="list-style-type: none;"><a href="/room-directory/LH408">LH408</a></li>
+                <li class="room ctrlPanel" value="40" style="list-style-type: none;"><a href="/room-directory/LH412">LH412</a></li>
+                <li class="room touchlink hdmi mic zoom" value="70" style="list-style-type: none;"><a href="/room-directory/LH437">LH437</a></li>
+                <li class="room ctrlPanel" value="49" style="list-style-type: none;"><a href="/room-directory/LH439">LH439</a></li>
+                <li class="room touchlink hdmi zoom" value="36" style="list-style-type: none;"><a href="/room-directory/LH441">LH441</a></li>
+                <li class="room ctrlPanel laptop hdmi zoom" value="32" style="list-style-type: none;"><a href="/room-directory/LH442">LH442</a></li>
+                <li class="room touchlink hdmi zoom" value="41" style="list-style-type: none;"><a href="/room-directory/LH443">LH443</a></li>
+                <li class="room touchlink laptop hdmi zoom" value="20" style="list-style-type: none;"><a href="/room-directory/LH445">LH445</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Love Library (LL)</h3>
+            <ul>
+                <li class="room ctrlPanel key" value="50" style="list-style-type: none;"><a href="/room-directory/ll408">LL408</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Life Sciences North (LSN)</h3>
+            <ul>
+                <li class="room touchlink hdmi zoom" value="49" style="list-style-type: none;"><a href="/room-directory/lsn111">LSN111</a></li>
+                <li class="room ctrlPanel key zoom" value="49" style="list-style-type: none;"><a href="/room-directory/lsn132">LSN132</a></li>
+                <li class="room ctrlPanel key zoom" value="49" style="list-style-type: none;"><a href="/room-directory/lsn134">LSN134</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Life Sciences South (LSS)</h3>
+            <ul>
+                <li class="room touchlink hdmi zoom" value="45" style="list-style-type: none;"><a href="/room-directory/lss244">LSS244</a></li>
+                <li class="room touchlink hdmi zoom" value="44" style="list-style-type: none;"><a href="/room-directory/lss246">LSS246</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="75" style="list-style-type: none;"><a
+                        href="/room-directory/lss248">LSS248</a>
+                </li>
+                <li class="room touchlink hdmi mic zoom" value="60" style="list-style-type: none;"><a href="/room-directory/lss365">LSS365</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Little Theatre (LT)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="185" style="list-style-type: none;"><a
+                        href="/room-directory/lt161">LT161</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Music (M)</h3>
+            <ul>
+                <li class="room touchlink hdmi mic zoom" value="80" style="list-style-type: none;"><a href="/room-directory/m120">M120</a></li>
+                <li class="room touchlink hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/m206">M206</a></li>
+                <li class="room ctrlPanel key zoom" value="47" style="list-style-type: none;"><a href="/room-directory/m207">M207</a></li>
+                <li class="room touchlink hdmi zoom" value="36" style="list-style-type: none;"><a href="/room-directory/m215">M215</a></li>
+                <li class="room ctrlPanel key" value="65" style="list-style-type: none;"><a href="/room-directory/m245">M245</a></li>
+                <li class="room ctrlPanel key" value="47" style="list-style-type: none;"><a href="/room-directory/m261">M261</a></li>
+                <li class="room touchlink hdmi mic zoom" value="70" style="list-style-type: none;"><a href="/room-directory/m265">M265</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>North Education (NE)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="167" style="list-style-type: none;"><a
+                        href="/room-directory/ne60">NE60</a>
+                </li>
+                <li class="room touchlink hdmi zoom" value="44" style="list-style-type: none;"><a href="/room-directory/ne73">NE73</a></li>
+                <li class="room touchlink hdmi zoom" value="32" style="list-style-type: none;"><a href="/room-directory/ne85">NE85</a></li>
+                <li class="room touchlink hdmi zoom" value="36" style="list-style-type: none;"><a href="/room-directory/ne172">NE172</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/ne173">NE173</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/ne175">NE175</a></li>
+                <li class="room touchlink hdmi key mic zoom" value="52" style="list-style-type: none;"><a href="/room-directory/ne271">NE271</a></li>
+                <li class="room ctrlPanel hdmi key zoom" value="34" style="list-style-type: none;"><a href="/room-directory/ne273">NE273</a></li>
+                <li class="room touchlink hdmi zoom" value="36" style="list-style-type: none;"><a href="/room-directory/ne278b">NE278B</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Peterson Gym (PG)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="220" style="list-style-type: none;"><a
+                        href="/room-directory/pg153">PG153</a>
+                </li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="125" style="list-style-type: none;"><a
+                        href="/room-directory/pg242">PG242</a>
+                </li>
+                <li class="room touchlink hdmi zoom" value="45" style="list-style-type: none;"><a href="/room-directory/pg244">PG244</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Physical Sciences (PS)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="100" style="list-style-type: none;"><a
+                        href="/room-directory/ps130">PS130</a>
+                </li>
+                <li class="room ctrlPanel key" value="35" style="list-style-type: none;"><a href="/room-directory/ps140">PS140</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Physics (P)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="72" style="list-style-type: none;"><a
+                        href="/room-directory/p144">P144</a>
+                </li>
+                <li class="room touchlink hdmi mic zoom" value="50" style="list-style-type: none;"><a href="/room-directory/p145">P145</a></li>
+                <li class="room touchlink hdmi zoom" value="60" style="list-style-type: none;"><a href="/room-directory/p146">P146</a></li>
+                <li class="room touchlink hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/p147">P147</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="50" style="list-style-type: none;"><a
+                        href="/room-directory/p148">P148</a>
+                </li>
+                <li class="room touchlink hdmi zoom" value="42" style="list-style-type: none;"><a href="/room-directory/p149">P149</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="50" style="list-style-type: none;"><a
+                        href="/room-directory/p244">P244</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Professional Studies and Fine Arts (PSFA)</h3>
+            <ul>
+                <li class="room ctrlPanel hdmi zoom" value="42" style="list-style-type: none;"><a href="/room-directory/psfa136">PSFA136</a></li>
+                <li class="room touchlink hdmi zoom" value="49" style="list-style-type: none;"><a href="/room-directory/psfa300">PSFA300</a></li>
+                <li class="room touchlink hdmi zoom" value="49" style="list-style-type: none;"><a href="/room-directory/psfa308">PSFA308</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="75" style="list-style-type: none;"><a
+                        href="/room-directory/psfa310">PSFA310</a>
+                </li>
+                <li class="room touchlink hdmi zoom" value="49" style="list-style-type: none;"><a href="/room-directory/psfa318">PSFA318</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="60" style="list-style-type: none;"><a
+                        href="/room-directory/psfa325">PSFA325</a>
+                </li>
+                <li class="room touchlink key zoom" value="48" style="list-style-type: none;"><a href="/room-directory/psfa326">PSFA326</a></li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="80" style="list-style-type: none;"><a
+                        href="/room-directory/psfa350">PSFA350</a>
+                </li>
+                <li class="room touchlink key zoom" value="48" style="list-style-type: none;"><a href="/room-directory/psfa358">PSFA358</a></li>
+                <li class="room touchlink key zoom" value="48" style="list-style-type: none;"><a href="/room-directory/psfa374">PSFA374</a></li>
+                <li class="room ctrlPanel key" value="35" style="list-style-type: none;"><a href="/room-directory/psfa413">PSFA413</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="30" style="list-style-type: none;"><a href="/room-directory/psfa437">PSFA437</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Storm Hall (SH)</h3>
+            <ul>
+                <li class="room ctrlPanel hdmi mic zoom" value="70" style="list-style-type: none;"><a href="/room-directory/sh101">SH101</a></li>
+                <li class="room touchlink hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/sh104">SH104</a></li>
+                <li class="room ctrlPanel hdmi key mic zoom" value="70" style="list-style-type: none;"><a href="/room-directory/sh105">SH105</a></li>
+                <li class="room ctrlPanel hdmi mic zoom" value="70" style="list-style-type: none;"><a href="/room-directory/sh109">SH109</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/sh113">SH113</a></li>
+                <li class="room ctrlPanel hdmi mic zoom" value="70" style="list-style-type: none;"><a href="/room-directory/sh119">SH119</a></li>
+                <li class="room ctrlPanel hdmi mic zoom" value="70" style="list-style-type: none;"><a href="/room-directory/sh123">SH123</a></li>
+                <li class="room ctrlPanel hdmi key mic zoom" value="70" style="list-style-type: none;"><a href="/room-directory/sh127">SH127</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/sh213">SH213</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/sh216">SH216</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/sh221">SH221</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/sh316">SH316</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="40" style="list-style-type: none;"><a href="/room-directory/sh320">SH320</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Storm Hall West (SHW)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="252" style="list-style-type: none;"><a
+                        href="/room-directory/shw11">SHW11</a>
+                </li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="435" style="list-style-type: none;"><a
+                        href="/room-directory/shw12">SHW12</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Speech, Language, and Hearing Sciences (SLHS)</h3>
+            <ul>
+                <li class="room touchlink hdmi zoom" value="35" style="list-style-type: none;"><a href="/room-directory/slhs149">SLHS149</a></li>
+                <li class="room touchlink hdmi zoom" value="44" style="list-style-type: none;"><a href="/room-directory/slhs220">SLHS220</a></li>
+                <li class="room ctrlPanel key" value="40" style="list-style-type: none;"><a href="/room-directory/slhs247">SLHS247</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Student Services East (SSE)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="123" style="list-style-type: none;"><a
+                        href="/room-directory/sse1401">SSE1401</a>
+                </li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>Student Services West (SSW)</h3>
+            <ul>
+                <li class="room ctrlPanel key mic" value="128" style="list-style-type: none;"><a href="/room-directory/ssw1500">SSW1500</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="30" style="list-style-type: none;"><a href="/room-directory/ssw2500">SSW2500</a></li>
+                <li class="room touchlink hdmi zoom" value="49" style="list-style-type: none;"><a href="/room-directory/ssw2501">SSW2501</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="30" style="list-style-type: none;"><a href="/room-directory/ssw2512">SSW2512</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="30" style="list-style-type: none;"><a href="/room-directory/ssw2514">SSW2514</a></li>
+                <li class="room ctrlPanel hdmi zoom" value="30" style="list-style-type: none;"><a href="/room-directory/ssw2522">SSW2522</a></li>
+                <li class="room ctrlPanel hdmi mic zoom" value="51" style="list-style-type: none;"><a href="/room-directory/ssw2532">SSW2532</a></li>
+                <li class="room ctrlPanel key" value="42" style="list-style-type: none;"><a href="/room-directory/ssw2650">SSW2650</a></li>
+                <li class="room ctrlPanel key" value="50" style="list-style-type: none;"><a href="/room-directory/ssw3620">SSW3620</a></li>
+                <li class="room touchlink hdmi zoom" value="30" style="list-style-type: none;"><a href="/room-directory/ssw3630">SSW3630</a></li>
+            </ul>
+        </div>
+        <div class="building" style="flex-basis: 300px; flex-grow: 0; flex-shrink: 0;">
+            <h3>West Commons (WC)</h3>
+            <ul>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="100" style="list-style-type: none;"><a
+                        href="/room-directory/wc201">WC201</a>
+                </li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="159" style="list-style-type: none;"><a
+                        href="/room-directory/wc220">WC220</a>
+                </li>
+                <li class="room touchlink hdmi key mic zoom mediasite" value="100" style="list-style-type: none;"><a
+                        href="/room-directory/wc230">WC230</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
